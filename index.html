@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard SGSI - Brandiamo Marchi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .nav-link.active {
+            background-color: #eef2ff; /* indigo-100 */
+            color: #4f46e5; /* indigo-600 */
+            font-weight: 600;
+        }
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        /* Sidebar transition */
+        aside {
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="relative min-h-screen md:flex">
+        <!-- Mobile menu overlay -->
+        <div id="mobile-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden" onclick="toggleMenu()"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-white text-gray-800 w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-30 border-r border-gray-200 flex flex-col">
+            <!-- Logo -->
+            <div class="h-16 flex items-center justify-center px-4 border-b border-gray-200 flex-shrink-0">
+                <div class="flex items-center space-x-2">
+                    <svg class="h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" />
+                    </svg>
+                    <h1 class="text-lg font-bold text-gray-800">Brandiamo Marchi</h1>
+                </div>
+            </div>
+            <!-- Navigation -->
+            <nav class="flex-1 px-4 space-y-2">
+                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors active" onclick="switchTab(event, 'dashboard')">
+                    <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors" onclick="switchTab(event, 'governanca')">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3m-9 9h18" /></svg>
+                    Governança e Risco
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors" onclick="switchTab(event, 'privacidade')">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    Privacidade e LGPD
+                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors" onclick="switchTab(event, 'ciberseguranca')">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    Cibersegurança
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+            <!-- Mobile header -->
+            <header class="md:hidden bg-white shadow-md">
+                <div class="flex justify-between items-center px-4 h-16">
+                    <span class="text-lg font-bold text-gray-800">Brandiamo Marchi</span>
+                    <button id="mobile-menu-button" class="text-gray-500 focus:outline-none focus:text-gray-700" onclick="toggleMenu()">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+            
+            <div class="container mx-auto px-6 py-8">
+                <!-- Content goes here -->
+                <div id="dashboard" class="tab-content active">
+                    <h3 class="text-2xl md:text-3xl font-medium text-gray-700">Dashboard</h3>
+                    <div class="mt-4">
+                        <div class="bg-white p-6 rounded-lg shadow-lg">
+                            <h4 class="text-xl font-semibold text-gray-800">Status de Conformidade do SGSI</h4>
+                            <p class="text-gray-600 mt-1">Visão geral do progresso na implementação de controles de segurança.</p>
+                            <div class="mt-6">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Progresso Geral</span>
+                                    <span class="text-sm font-medium text-indigo-600">85%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-4">
+                                    <div class="bg-indigo-600 h-4 rounded-full" style="width: 85%;"></div>
+                                </div>
+                            </div>
+                            <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+                                <div>
+                                    <p class="text-2xl font-bold text-green-600">45/50</p>
+                                    <p class="text-sm text-gray-500">Controles Implementados</p>
+                                </div>
+                                <div>
+                                    <p class="text-2xl font-bold text-yellow-600">3</p>
+                                    <p class="text-sm text-gray-500">Riscos Altos Ativos</p>
+                                </div>
+                                <div>
+                                    <p class="text-2xl font-bold text-gray-800">12</p>
+                                    <p class="text-sm text-gray-500">Políticas Publicadas</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Governança -->
+                <div id="governanca" class="tab-content">
+                    <h3 class="text-2xl md:text-3xl font-medium text-gray-700">Governança, Risco e Compliance</h3>
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-politica-seguranca')">
+                            <h4 class="font-semibold text-lg text-gray-900">Política de Segurança</h4>
+                            <p class="text-sm text-gray-600 mt-2">Diretrizes e normas fundamentais que regem a segurança da informação na empresa.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-matriz-riscos')">
+                            <h4 class="font-semibold text-lg text-gray-900">Matriz de Riscos e Controles</h4>
+                            <p class="text-sm text-gray-600 mt-2">Análise e avaliação dos principais riscos de segurança e os controles para mitigá-los.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-frameworks')">
+                            <h4 class="font-semibold text-lg text-gray-900">Mapeamento de Frameworks</h4>
+                            <p class="text-sm text-gray-600 mt-2">Alinhamento estratégico com NIST CSF e CIS Controls para uma defesa robusta.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacidade -->
+                <div id="privacidade" class="tab-content">
+                    <h3 class="text-2xl md:text-3xl font-medium text-gray-700">Privacidade e LGPD</h3>
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-politica-privacidade')">
+                            <h4 class="font-semibold text-lg text-gray-900">Política de Privacidade</h4>
+                            <p class="text-sm text-gray-600 mt-2">Compromisso público da empresa com a proteção de dados pessoais.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-data-mapping')">
+                            <h4 class="font-semibold text-lg text-gray-900">Mapeamento de Dados</h4>
+                            <p class="text-sm text-gray-600 mt-2">Inventário e ciclo de vida dos dados pessoais tratados pela organização.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-dpia')">
+                            <h4 class="font-semibold text-lg text-gray-900">DPIA Simulado</h4>
+                            <p class="text-sm text-gray-600 mt-2">Relatório de Impacto à Proteção de Dados para novos projetos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cibersegurança -->
+                <div id="ciberseguranca" class="tab-content">
+                    <h3 class="text-2xl md:text-3xl font-medium text-gray-700">Cibersegurança Operacional</h3>
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                         <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-resposta-incidentes')">
+                            <h4 class="font-semibold text-lg text-gray-900">Plano de Resposta a Incidentes</h4>
+                            <p class="text-sm text-gray-600 mt-2">Procedimentos para identificar, conter e erradicar ameaças cibernéticas.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-conscientizacao')">
+                            <h4 class="font-semibold text-lg text-gray-900">Plano de Conscientização</h4>
+                            <p class="text-sm text-gray-600 mt-2">Programa de treinamento contínuo para colaboradores sobre segurança.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-owasp')">
+                            <h4 class="font-semibold text-lg text-gray-900">Análise de Vulnerabilidades Web</h4>
+                            <p class="text-sm text-gray-600 mt-2">Avaliação de riscos em aplicações web com base no OWASP Top 10.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-container">
+        <!-- Modals will be injected here by JS -->
+    </div>
+
+    <script>
+        const modalsData = {
+            'modal-politica-seguranca': {
+                title: 'Política de Segurança da Informação',
+                content: `
+                    <h4>1. Objetivo</h4>
+                    <p>Estabelecer as diretrizes para proteger os ativos de informação da Brandiamo Marchi contra ameaças, garantindo a continuidade do negócio e a conformidade legal.</p>
+                    <h4>2. Escopo</h4>
+                    <p>Esta política se aplica a todos os colaboradores, prestadores de serviço e parceiros que tenham acesso a informações da empresa.</p>
+                    <h4>3. Diretrizes Principais</h4>
+                    <ul>
+                        <li><strong>Controle de Acesso:</strong> O acesso a sistemas e dados deve ser baseado no princípio do menor privilégio (least privilege).</li>
+                        <li><strong>Classificação da Informação:</strong> As informações devem ser classificadas como Pública, Interna, Confidencial ou Restrita.</li>
+                        <li><strong>Gestão de Senhas:</strong> Senhas devem ser complexas, trocadas periodicamente e nunca compartilhadas. O uso de MFA é obrigatório.</li>
+                    </ul>`
+            },
+            'modal-matriz-riscos': {
+                title: 'Matriz de Riscos e Controles',
+                content: `
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-2 text-left font-semibold">Risco</th>
+                                    <th class="p-2 text-left font-semibold">Ameaça/Vulnerabilidade</th>
+                                    <th class="p-2 text-left font-semibold">Impacto</th>
+                                    <th class="p-2 text-left font-semibold">Controle (Blue Team)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <tr>
+                                    <td class="p-2 font-medium">Vazamento de dados via Phishing</td>
+                                    <td class="p-2">Engenharia Social / Falta de conscientização</td>
+                                    <td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full">Alto</span></td>
+                                    <td class="p-2">Treinamento anti-phishing; Filtro de e-mail avançado; EDR.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-medium">Indisponibilidade do site por DDoS</td>
+                                    <td class="p-2">Atacante externo / Falta de proteção na borda</td>
+                                    <td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-full">Médio</span></td>
+                                    <td class="p-2">Implementação de WAF e CDN com proteção Anti-DDoS.</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-medium">Acesso indevido ao CRM</td>
+                                    <td class="p-2">Senhas fracas / Ausência de MFA</td>
+                                    <td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full">Alto</span></td>
+                                    <td class="p-2">Política de senhas fortes; Habilitação obrigatória de MFA.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>`
+            },
+            'modal-frameworks': { title: 'Mapeamento de Frameworks', content: '<h4>NIST Cybersecurity Framework (CSF)</h4><p>Utilizamos as 5 funções (Identificar, Proteger, Detectar, Responder, Recuperar) para estruturar nossa estratégia de segurança.</p><h4>CIS Controls</h4><p>Aplicamos os CIS Controls como um guia prático e priorizado para a implementação de defesas técnicas essenciais.</p>' },
+            'modal-politica-privacidade': { title: 'Política de Privacidade', content: '<h4>Nosso Compromisso</h4><p>A Brandiamo Marchi está comprometida em proteger a privacidade e os dados pessoais de nossos clientes, em total conformidade com a LGPD.</p>' },
+            'modal-data-mapping': { title: 'Mapeamento de Dados (LGPD)', content: '<h4>Ciclo de Vida do Dado</h4><p>Mapeamos todo o ciclo de vida dos dados pessoais, desde a coleta até o descarte, garantindo que cada tratamento tenha uma base legal e uma finalidade legítima.</p>' },
+            'modal-dpia': { title: 'DPIA Simulado', content: '<h4>Análise de Impacto</h4><p>Realizamos Relatórios de Impacto à Proteção de Dados (DPIA) para novos projetos que envolvam tratamento de dados pessoais em larga escala ou de alto risco, a fim de mitigar proativamente as ameaças à privacidade.</p>' },
+            'modal-resposta-incidentes': { title: 'Plano de Resposta a Incidentes', content: '<h4>Fases da Resposta</h4><ol class="list-decimal list-inside"><li>Preparação</li><li>Identificação</li><li>Contenção</li><li>Erradicação</li><li>Recuperação</li><li>Lições Aprendidas</li></ol>' },
+            'modal-conscientizacao': { title: 'Plano de Conscientização', content: '<h4>Programa Contínuo</h4><p>Nosso programa inclui treinamentos anuais, campanhas de phishing simulado trimestrais e comunicações de segurança regulares para manter nossos colaboradores sempre alertas.</p>' },
+            'modal-owasp': { title: 'Análise de Vulnerabilidades Web (OWASP)', content: '<h4>Top 3 Riscos Monitorados</h4><ul><li><b>A01:2021 - Quebra de Controle de Acesso:</b> Garantimos que os usuários só possam acessar os dados que lhes são permitidos.</li><li><b>A02:2021 - Falhas Criptográficas:</b> Todos os dados sensíveis são transmitidos e armazenados de forma criptografada.</li><li><b>A03:2021 - Injeção:</b> Validamos e sanitizamos todas as entradas de usuário para prevenir ataques de injeção (ex: SQL Injection).</li></ul>' }
+        };
+
+        function createModal(id, title, content) {
+            return `
+                <div id="${id}" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 opacity-0 pointer-events-none">
+                    <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col transform scale-95">
+                        <div class="border-b px-6 py-4 flex justify-between items-center flex-shrink-0">
+                            <h3 class="text-lg font-semibold">${title}</h3>
+                            <button onclick="closeModal('${id}')" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+                        </div>
+                        <div class="p-6 text-sm prose max-w-none overflow-y-auto">
+                            ${content}
+                        </div>
+                        <div class="border-t px-6 py-3 bg-gray-50 rounded-b-lg flex-shrink-0 text-right">
+                             <button onclick="closeModal('${id}')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm font-medium">Fechar</button>
+                        </div>
+                    </div>
+                </div>`;
+        }
+        
+        const modalContainer = document.getElementById('modal-container');
+        for (const [id, data] of Object.entries(modalsData)) {
+            modalContainer.innerHTML += createModal(id, data.title, data.content);
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            const modalContent = modal.querySelector('.modal-content');
+            document.body.style.overflow = 'hidden';
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modalContent.classList.remove('scale-95');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            const modalContent = modal.querySelector('.modal-content');
+            document.body.style.overflow = 'auto';
+            modal.classList.add('opacity-0');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('pointer-events-none');
+            }, 300);
+        }
+
+        function switchTab(event, tabId) {
+            event.preventDefault();
+            
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            // Close mobile menu on tab switch
+            if (window.innerWidth < 768) {
+                toggleMenu();
+            }
+        }
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
