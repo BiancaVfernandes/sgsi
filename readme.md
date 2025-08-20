@@ -2,7 +2,7 @@ Dashboard de SGSI - Projeto de Portfólio de Bianca Fernandes
 🎯 Sobre o Projeto
 Este projeto é um dashboard interativo que simula o portal de um Sistema de Gestão de Segurança da Informação (SGSI) para uma empresa fictícia, a "Brandiamo Marchi".
 
-Mais do que uma simples página web, este dashboard foi concebido como uma ferramenta de portfólio funcional. O seu objetivo é demonstrar, de forma prática e visual, o meu conhecimento sobre os processos, métricas e domínios que compõem um programa de segurança da informação robusto e moderno. Cada elemento, desde os gráficos até ao conteúdo dos modais, foi pensado para refletir os desafios e as responsabilidades de um profissional da área de GRC e Cibersegurança.
+Este não é apenas um site estático; é uma simulação funcional de uma ferramenta que um analista de GRC e Cibersegurança utilizaria no dia a dia. O seu objetivo é demonstrar, de forma prática e visual, o meu conhecimento sobre os processos, métricas e domínios que compõem um programa de segurança da informação robusto e moderno. Cada elemento foi projetado para traduzir conceitos teóricos em insights práticos, demonstrando a capacidade de comunicar o status da segurança de forma clara e eficaz.
 
 💡 A Estratégia por Trás do Dashboard
 A estrutura do dashboard foi organizada em domínios-chave para demonstrar uma compreensão holística da segurança da informação, conectando a estratégia (Governança) à operação (Cibersegurança).
@@ -15,12 +15,12 @@ Esta seção evidencia o conhecimento sobre a fundação de um programa de segur
 
 Políticas e Frameworks: Entendimento de como alinhar a segurança com normas de mercado (ISO 27001, NIST CSF).
 
-Gestão de Riscos: Demonstração do ciclo de vida do risco, incluindo a análise de impacto vs. probabilidade (mapa de riscos interativo) e a gestão da cadeia de suprimentos (riscos de terceiros).
+Gestão de Riscos: Demonstração do ciclo de vida do risco, incluindo a análise de impacto vs. probabilidade, a gestão da cadeia de suprimentos (riscos de terceiros) e a importância da auditoria.
 
-Métricas (KRIs) e Auditoria: Prova de uma mentalidade orientada a dados e à validação contínua dos controlos.
+Métricas (KRIs): Prova de uma mentalidade orientada a dados para monitorizar e prever a exposição ao risco.
 
 3. Privacidade e LGPD
-Mostra a aplicação prática da legislação de proteção de dados, cobrindo desde a criação de políticas até a gestão de incidentes de privacidade e o mapeamento do ciclo de vida dos dados (Data Mapping).
+Mostra a aplicação prática da legislação de proteção de dados, cobrindo desde a criação de políticas até a gestão de incidentes, consentimento, e o ciclo de vida dos dados (mapeamento, retenção e descarte).
 
 4. Cibersegurança Operacional
 Reflete o conhecimento sobre as defesas do dia a dia:
@@ -30,14 +30,14 @@ Resposta a Incidentes e Gestão de Vulnerabilidades: Entendimento dos processos 
 Inteligência de Ameaças e Segurança em Nuvem: Demonstração de familiaridade com conceitos modernos e essenciais no cenário de ameaças atual.
 
 5. Melhoria Contínua
-Esta seção destaca uma visão estratégica e proativa, mostrando conhecimento sobre como evoluir e fortalecer as defesas de forma contínua através de exercícios colaborativos (Purple Team), Análise de Causa Raiz (RCA) e otimização de processos.
+Esta seção destaca uma visão estratégica, mostrando conhecimento sobre como evoluir e fortalecer as defesas de forma contínua através de exercícios colaborativos (Purple Team), análise de causa raiz (RCA), otimização de processos e medição de desempenho (KPIs).
 
 ✨ Funcionalidades em Destaque
 Navegação por Abas: Interface limpa e organizada, simulando uma aplicação real.
 
 Dashboard com Métricas Visuais: Gráficos e indicadores que facilitam a compreensão do estado da segurança.
 
-Mapa de Riscos Interativo: Visualização dinâmica dos riscos com tooltips informativos.
+Mapa de Riscos Interativo: Uma visualização dinâmica e clara, com um painel de detalhes que torna a avaliação de riscos mais intuitiva.
 
 Modais com Conteúdo Detalhado: Cada card abre uma janela com informações aprofundadas sobre o tema, permitindo explorar os conceitos sem poluir a interface.
 
