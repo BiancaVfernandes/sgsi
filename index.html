@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard SGSI - Brandiamo Marchi</title>
+    <title>Dashboard SGSI - Portfólio Bianca Fernandes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -17,6 +18,11 @@
         }
         .tab-content.active {
             display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .nav-link.active {
             background-color: #eef2ff; /* indigo-100 */
@@ -29,9 +35,38 @@
         .modal-content {
             transition: transform 0.3s ease;
         }
-        /* Sidebar transition */
         aside {
             transition: transform 0.3s ease-in-out;
+        }
+        .risk-matrix-cell {
+            width: 33.33%;
+            padding-bottom: 33.33%;
+            position: relative;
+        }
+        .risk-dot {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            width: 1rem;
+            height: 1rem;
+            border-radius: 9999px;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .risk-dot:hover, .risk-dot.selected {
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+        .prose ul { list-style-type: disc; margin-left: 1.5rem; }
+        .prose ol { list-style-type: decimal; margin-left: 1.5rem; }
+        .prose p, .prose ul, .prose ol, .prose h4 { margin-bottom: 1rem; }
+        .prose h4 { font-size: 1.1rem; font-weight: 600; }
+        #toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            transition: opacity 0.5s, transform 0.5s;
+            z-index: 100;
         }
     </style>
 </head>
@@ -43,81 +78,74 @@
 
         <!-- Sidebar -->
         <aside id="sidebar" class="bg-white text-gray-800 w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-30 border-r border-gray-200 flex flex-col">
-            <!-- Logo -->
             <div class="h-16 flex items-center justify-center px-4 border-b border-gray-200 flex-shrink-0">
                 <div class="flex items-center space-x-2">
-                    <svg class="h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" />
-                    </svg>
+                    <svg class="h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" /></svg>
                     <h1 class="text-lg font-bold text-gray-800">Brandiamo Marchi</h1>
                 </div>
             </div>
-            <!-- Navigation -->
             <nav class="flex-1 px-4 space-y-2">
-                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors active" onclick="switchTab(event, 'dashboard')">
-                    <svg class="h-5 w-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
-                    Dashboard
-                </a>
-                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors" onclick="switchTab(event, 'governanca')">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3m-9 9h18" /></svg>
-                    Governança e Risco
-                </a>
-                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors" onclick="switchTab(event, 'privacidade')">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                    Privacidade e LGPD
-                </a>
-                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors" onclick="switchTab(event, 'ciberseguranca')">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                    Cibersegurança
-                </a>
+                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors active" onclick="switchTab(event, 'dashboard')"><i class="fas fa-chart-pie w-5 h-5 mr-3"></i>Dashboard</a>
+                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors" onclick="switchTab(event, 'governanca')"><i class="fas fa-balance-scale w-5 h-5 mr-3"></i>Governança e Risco</a>
+                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors" onclick="switchTab(event, 'privacidade')"><i class="fas fa-user-secret w-5 h-5 mr-3"></i>Privacidade e LGPD</a>
+                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors" onclick="switchTab(event, 'ciberseguranca')"><i class="fas fa-shield-alt w-5 h-5 mr-3"></i>Cibersegurança</a>
+                <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors" onclick="switchTab(event, 'melhoria')"><i class="fas fa-rocket w-5 h-5 mr-3"></i>Melhoria Contínua</a>
+                <div class="pt-4 mt-4 border-t border-gray-200">
+                    <a href="#" class="nav-link flex items-center px-4 py-2 text-sm text-gray-700 rounded-md hover:bg-gray-100 transition-colors" onclick="switchTab(event, 'sobre-mim')"><i class="fas fa-user-circle w-5 h-5 mr-3"></i>Sobre Mim</a>
+                </div>
             </nav>
         </aside>
 
         <!-- Main content -->
         <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-            <!-- Mobile header -->
             <header class="md:hidden bg-white shadow-md">
                 <div class="flex justify-between items-center px-4 h-16">
                     <span class="text-lg font-bold text-gray-800">Brandiamo Marchi</span>
                     <button id="mobile-menu-button" class="text-gray-500 focus:outline-none focus:text-gray-700" onclick="toggleMenu()">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                        </svg>
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                     </button>
                 </div>
             </header>
             
             <div class="container mx-auto px-6 py-8">
-                <!-- Content goes here -->
+                <!-- Dashboard -->
                 <div id="dashboard" class="tab-content active">
-                    <h3 class="text-2xl md:text-3xl font-medium text-gray-700">Dashboard</h3>
-                    <div class="mt-4">
+                    <h3 class="text-2xl md:text-3xl font-medium text-gray-700">Dashboard de Segurança</h3>
+                    <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div class="bg-white p-6 rounded-lg shadow-lg">
                             <h4 class="text-xl font-semibold text-gray-800">Status de Conformidade do SGSI</h4>
-                            <p class="text-gray-600 mt-1">Visão geral do progresso na implementação de controles de segurança.</p>
+                            <p class="text-gray-600 mt-1">Visão geral do progresso na implementação de controlos.</p>
                             <div class="mt-6">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-sm font-medium text-gray-700">Progresso Geral</span>
-                                    <span class="text-sm font-medium text-indigo-600">85%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-4">
-                                    <div class="bg-indigo-600 h-4 rounded-full" style="width: 85%;"></div>
-                                </div>
+                                <div class="flex justify-between items-center mb-1"><span class="text-sm font-medium text-gray-700">Progresso Geral</span><span class="text-sm font-medium text-indigo-600">85%</span></div>
+                                <div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-indigo-600 h-4 rounded-full" style="width: 85%;"></div></div>
                             </div>
                             <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-                                <div>
-                                    <p class="text-2xl font-bold text-green-600">45/50</p>
-                                    <p class="text-sm text-gray-500">Controles Implementados</p>
-                                </div>
-                                <div>
-                                    <p class="text-2xl font-bold text-yellow-600">3</p>
-                                    <p class="text-sm text-gray-500">Riscos Altos Ativos</p>
-                                </div>
-                                <div>
-                                    <p class="text-2xl font-bold text-gray-800">12</p>
-                                    <p class="text-sm text-gray-500">Políticas Publicadas</p>
-                                </div>
+                                <div><p class="text-2xl font-bold text-green-600">45/50</p><p class="text-sm text-gray-500">Controlos Implementados</p></div>
+                                <div><p class="text-2xl font-bold text-yellow-600">3</p><p class="text-sm text-gray-500">Riscos Altos Ativos</p></div>
+                                <div><p class="text-2xl font-bold text-gray-800">12</p><p class="text-sm text-gray-500">Políticas Publicadas</p></div>
                             </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-lg">
+                            <h4 class="text-xl font-semibold text-gray-800">Resultados da Campanha de Phishing (Q3)</h4>
+                            <p class="text-gray-600 mt-1">Análise do comportamento dos colaboradores.</p>
+                            <div class="mt-4 space-y-4">
+                                <div class="flex items-center"><div class="w-2/5 text-sm text-gray-600">E-mails Abertos</div><div class="w-3/5"><div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-blue-500 h-4 rounded-full" style="width: 75%;"></div></div></div><div class="w-1/5 text-right text-sm font-medium">75%</div></div>
+                                <div class="flex items-center"><div class="w-2/5 text-sm text-gray-600">Cliques em Links</div><div class="w-3/5"><div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-yellow-500 h-4 rounded-full" style="width: 18%;"></div></div></div><div class="w-1/5 text-right text-sm font-medium">18%</div></div>
+                                <div class="flex items-center"><div class="w-2/5 text-sm text-gray-600">Credenciais Submetidas</div><div class="w-3/5"><div class="w-full bg-gray-200 rounded-full h-4"><div class="bg-red-500 h-4 rounded-full" style="width: 4%;"></div></div></div><div class="w-1/5 text-right text-sm font-medium">4%</div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-white p-6 rounded-lg shadow-lg">
+                        <h4 class="text-xl font-semibold text-gray-800">Alertas de Segurança Recentes (Simulado)</h4>
+                        <div class="mt-4 overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="bg-gray-50"><tr><th class="p-2 text-left font-semibold">Prioridade</th><th class="p-2 text-left font-semibold">Descrição</th><th class="p-2 text-left font-semibold">Hora</th><th class="p-2 text-left font-semibold">Status</th></tr></thead>
+                                <tbody class="divide-y">
+                                    <tr><td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full">Alta</span></td><td class="p-2">Múltiplas tentativas de login falhadas (Admin)</td><td class="p-2">Há 5 min</td><td class="p-2">Aberto</td></tr>
+                                    <tr><td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-full">Média</span></td><td class="p-2">Atividade suspeita de download (Servidor de Ficheiros)</td><td class="p-2">Há 2 horas</td><td class="p-2">Em Análise</td></tr>
+                                    <tr><td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full">Baixa</span></td><td class="p-2">Política de firewall desatualizada detetada</td><td class="p-2">Há 8 horas</td><td class="p-2">Fechado</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -126,17 +154,62 @@
                 <div id="governanca" class="tab-content">
                     <h3 class="text-2xl md:text-3xl font-medium text-gray-700">Governança, Risco e Compliance</h3>
                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-politica-seguranca')">
-                            <h4 class="font-semibold text-lg text-gray-900">Política de Segurança</h4>
-                            <p class="text-sm text-gray-600 mt-2">Diretrizes e normas fundamentais que regem a segurança da informação na empresa.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-matriz-riscos')">
-                            <h4 class="font-semibold text-lg text-gray-900">Matriz de Riscos e Controles</h4>
-                            <p class="text-sm text-gray-600 mt-2">Análise e avaliação dos principais riscos de segurança e os controles para mitigá-los.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-frameworks')">
-                            <h4 class="font-semibold text-lg text-gray-900">Mapeamento de Frameworks</h4>
-                            <p class="text-sm text-gray-600 mt-2">Alinhamento estratégico com NIST CSF e CIS Controls para uma defesa robusta.</p>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-politica-seguranca')"><h4 class="font-semibold text-lg text-gray-900">Política de Segurança</h4><p class="text-sm text-gray-600 mt-2">Diretrizes e normas fundamentais que regem a segurança.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-matriz-riscos')"><h4 class="font-semibold text-lg text-gray-900">Matriz de Riscos e Controlos</h4><p class="text-sm text-gray-600 mt-2">Análise dos principais riscos e os controlos para mitigá-los.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-frameworks')"><h4 class="font-semibold text-lg text-gray-900">Mapeamento de Frameworks</h4><p class="text-sm text-gray-600 mt-2">Alinhamento estratégico com NIST CSF e CIS Controls.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-risco-terceiros')"><h4 class="font-semibold text-lg text-gray-900">Gestão de Riscos de Terceiros</h4><p class="text-sm text-gray-600 mt-2">Avaliação de segurança e conformidade de fornecedores.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-kris')"><h4 class="font-semibold text-lg text-gray-900">Indicadores-Chave de Risco (KRIs)</h4><p class="text-sm text-gray-600 mt-2">Métricas para monitorizar e prever a exposição a riscos.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-auditoria')"><h4 class="font-semibold text-lg text-gray-900">Auditoria e Conformidade</h4><p class="text-sm text-gray-600 mt-2">Verificação da eficácia dos controlos e adesão às normas.</p></div>
+                    </div>
+                    <div class="mt-6 bg-white p-6 rounded-lg shadow-lg">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Mapa de Riscos Interativo</h4>
+                        <div class="flex flex-col md:flex-row gap-6 items-start">
+                             <div class="w-full md:w-2/3">
+                                <div class="flex items-start">
+                                    <div class="text-center text-sm font-bold text-gray-600 pt-8 mr-4" style="writing-mode: vertical-rl; transform: rotate(180deg);">Probabilidade</div>
+                                    <div class="w-full">
+                                        <div class="flex">
+                                            <div class="flex flex-col-reverse justify-around text-xs font-semibold text-gray-500 pr-2 py-1">
+                                                <span class="h-1/3 flex items-center">Alta</span>
+                                                <span class="h-1/3 flex items-center">Média</span>
+                                                <span class="h-1/3 flex items-center">Baixa</span>
+                                            </div>
+                                            <div id="risk-matrix" class="w-full flex flex-wrap border-l border-b border-gray-300 relative">
+                                                <div class="risk-matrix-cell bg-yellow-300 border-t border-r border-gray-300"></div>
+                                                <div class="risk-matrix-cell bg-orange-400 border-t border-r border-gray-300"></div>
+                                                <div class="risk-matrix-cell bg-red-500 border-t border-r border-gray-300"></div>
+                                                <div class="risk-matrix-cell bg-green-300 border-t border-r border-gray-300"></div>
+                                                <div class="risk-matrix-cell bg-yellow-400 border-t border-r border-gray-300"></div>
+                                                <div class="risk-matrix-cell bg-red-400 border-t border-r border-gray-300"></div>
+                                                <div class="risk-matrix-cell bg-green-200 border-t border-r border-gray-300"></div>
+                                                <div class="risk-matrix-cell bg-yellow-300 border-t border-r border-gray-300"></div>
+                                                <div class="risk-matrix-cell bg-orange-400 border-t border-r border-gray-300"></div>
+                                                <!-- Risk Dots -->
+                                                <div class="risk-dot bg-blue-600" style="left: 50%; top: 50%;" data-risk="Risco de Indisponibilidade de Serviço" data-impact="Médio" data-probability="Média" data-details="Ataques DDoS ou falhas de infraestrutura podem interromper o acesso aos serviços essenciais da empresa."></div>
+                                                <div class="risk-dot bg-purple-600" style="left: 83.33%; top: 16.67%;" data-risk="Risco de Phishing bem-sucedido" data-impact="Alto" data-probability="Alta" data-details="Colaboradores podem ser enganados por e-mails fraudulentos, resultando no roubo de credenciais e acesso indevido à rede."></div>
+                                                <div class="risk-dot bg-gray-700" style="left: 16.67%; top: 16.67%;" data-risk="Risco de Acesso Físico Indevido" data-impact="Baixo" data-probability="Alta" data-details="Uma pessoa não autorizada pode obter acesso físico às instalações, comprometendo equipamentos e dados."></div>
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between text-xs font-semibold text-gray-500 pt-2 pl-8"><span class="w-1/3 text-center">Baixo</span><span class="w-1/3 text-center">Médio</span><span class="w-1/3 text-center">Alto</span></div>
+                                        <div class="text-center text-sm font-bold text-gray-600 mt-1 pl-8">Impacto</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/3 space-y-4">
+                                <div id="risk-details-panel" class="bg-gray-50 p-4 rounded-lg border border-gray-200 h-full min-h-[150px]">
+                                    <h5 class="font-bold text-gray-800 mb-2">Detalhes do Risco</h5>
+                                    <p class="text-sm text-gray-600">Clique num ponto do mapa para ver os detalhes.</p>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-gray-800 mb-2">Legenda de Risco</h5>
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-green-300 mr-2"></div>Baixo</div>
+                                        <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-yellow-400 mr-2"></div>Moderado</div>
+                                        <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-orange-400 mr-2"></div>Alto</div>
+                                        <div class="flex items-center"><div class="w-4 h-4 rounded-full bg-red-500 mr-2"></div>Crítico</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -145,17 +218,18 @@
                 <div id="privacidade" class="tab-content">
                     <h3 class="text-2xl md:text-3xl font-medium text-gray-700">Privacidade e LGPD</h3>
                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-politica-privacidade')">
-                            <h4 class="font-semibold text-lg text-gray-900">Política de Privacidade</h4>
-                            <p class="text-sm text-gray-600 mt-2">Compromisso público da empresa com a proteção de dados pessoais.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-data-mapping')">
-                            <h4 class="font-semibold text-lg text-gray-900">Mapeamento de Dados</h4>
-                            <p class="text-sm text-gray-600 mt-2">Inventário e ciclo de vida dos dados pessoais tratados pela organização.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-dpia')">
-                            <h4 class="font-semibold text-lg text-gray-900">DPIA Simulado</h4>
-                            <p class="text-sm text-gray-600 mt-2">Relatório de Impacto à Proteção de Dados para novos projetos.</p>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-politica-privacidade')"><h4 class="font-semibold text-lg text-gray-900">Política de Privacidade</h4><p class="text-sm text-gray-600 mt-2">Compromisso público com a proteção de dados pessoais.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-data-mapping')"><h4 class="font-semibold text-lg text-gray-900">Mapeamento de Dados</h4><p class="text-sm text-gray-600 mt-2">Inventário e ciclo de vida dos dados pessoais tratados.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-dpia')"><h4 class="font-semibold text-lg text-gray-900">DPIA Simulado</h4><p class="text-sm text-gray-600 mt-2">Relatório de Impacto à Proteção de Dados para novos projetos.</p></div>
+                         <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-incidente-privacidade')"><h4 class="font-semibold text-lg text-gray-900">Gestão de Incidentes de Privacidade</h4><p class="text-sm text-gray-600 mt-2">Fluxo de resposta a vazamentos de dados conforme a LGPD.</p></div>
+                    </div>
+                    <div class="mt-6 bg-white p-6 rounded-lg shadow-lg">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Direitos do Titular (LGPD)</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                            <div class="bg-gray-50 p-4 rounded-lg"><i class="fas fa-eye mx-auto h-8 w-8 text-indigo-600"></i><p class="mt-2 text-sm font-medium">Acesso aos Dados</p></div>
+                            <div class="bg-gray-50 p-4 rounded-lg"><i class="fas fa-pencil-alt mx-auto h-8 w-8 text-indigo-600"></i><p class="mt-2 text-sm font-medium">Correção</p></div>
+                            <div class="bg-gray-50 p-4 rounded-lg"><i class="fas fa-trash-alt mx-auto h-8 w-8 text-indigo-600"></i><p class="mt-2 text-sm font-medium">Eliminação</p></div>
+                            <div class="bg-gray-50 p-4 rounded-lg"><i class="fas fa-exchange-alt mx-auto h-8 w-8 text-indigo-600"></i><p class="mt-2 text-sm font-medium">Portabilidade</p></div>
                         </div>
                     </div>
                 </div>
@@ -164,17 +238,55 @@
                 <div id="ciberseguranca" class="tab-content">
                     <h3 class="text-2xl md:text-3xl font-medium text-gray-700">Cibersegurança Operacional</h3>
                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                         <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-resposta-incidentes')">
-                            <h4 class="font-semibold text-lg text-gray-900">Plano de Resposta a Incidentes</h4>
-                            <p class="text-sm text-gray-600 mt-2">Procedimentos para identificar, conter e erradicar ameaças cibernéticas.</p>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-resposta-incidentes')"><h4 class="font-semibold text-lg text-gray-900">Plano de Resposta a Incidentes</h4><p class="text-sm text-gray-600 mt-2">Procedimentos para identificar, conter e erradicar ameaças.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-conscientizacao')"><h4 class="font-semibold text-lg text-gray-900">Plano de Conscientização</h4><p class="text-sm text-gray-600 mt-2">Programa de treinamento contínuo para colaboradores.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-owasp')"><h4 class="font-semibold text-lg text-gray-900">Análise de Vulnerabilidades Web</h4><p class="text-sm text-gray-600 mt-2">Avaliação de riscos com base no OWASP Top 10.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-gestao-vulnerabilidades')"><h4 class="font-semibold text-lg text-gray-900">Gestão de Vulnerabilidades</h4><p class="text-sm text-gray-600 mt-2">Ciclo de identificação, priorização e correção de falhas.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-threat-intelligence')"><h4 class="font-semibold text-lg text-gray-900">Inteligência de Ameaças</h4><p class="text-sm text-gray-600 mt-2">Monitoramento proativo de novas táticas de ataque.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-cloud-security')"><h4 class="font-semibold text-lg text-gray-900">Segurança em Nuvem</h4><p class="text-sm text-gray-600 mt-2">Proteção de dados e serviços em ambientes IaaS, PaaS e SaaS.</p></div>
+                    </div>
+                    <div class="mt-6 bg-white p-6 rounded-lg shadow-lg">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Funil de Resposta a Incidentes</h4>
+                        <div class="flex flex-col items-center space-y-2 text-center">
+                            <div class="flex items-center text-sm font-medium text-gray-700"><i class="fas fa-search h-5 w-5 mr-2 text-blue-500"></i>Deteção e Análise</div>
+                            <div class="h-4 w-px bg-gray-300"></div>
+                            <div class="w-48 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">100 Alertas Recebidos</div>
+                            <div class="h-4 w-px bg-gray-300"></div>
+                            <div class="flex items-center text-sm font-medium text-gray-700"><i class="fas fa-exclamation-triangle h-5 w-5 mr-2 text-yellow-500"></i>Contenção</div>
+                            <div class="h-4 w-px bg-gray-300"></div>
+                            <div class="w-32 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs font-bold">15 Incidentes Confirmados</div>
+                            <div class="h-4 w-px bg-gray-300"></div>
+                            <div class="flex items-center text-sm font-medium text-gray-700"><i class="fas fa-check-circle h-5 w-5 mr-2 text-green-500"></i> Erradicação e Recuperação</div>
+                            <div class="h-4 w-px bg-gray-300"></div>
+                            <div class="w-24 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">15 Resolvidos</div>
                         </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-conscientizacao')">
-                            <h4 class="font-semibold text-lg text-gray-900">Plano de Conscientização</h4>
-                            <p class="text-sm text-gray-600 mt-2">Programa de treinamento contínuo para colaboradores sobre segurança.</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-owasp')">
-                            <h4 class="font-semibold text-lg text-gray-900">Análise de Vulnerabilidades Web</h4>
-                            <p class="text-sm text-gray-600 mt-2">Avaliação de riscos em aplicações web com base no OWASP Top 10.</p>
+                    </div>
+                </div>
+                
+                <!-- Melhoria Contínua -->
+                <div id="melhoria" class="tab-content">
+                    <h3 class="text-2xl md:text-3xl font-medium text-gray-700">Melhoria Contínua</h3>
+                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-purple-team')"><h4 class="font-semibold text-lg text-gray-900">Simulação Purple Team</h4><p class="text-sm text-gray-600 mt-2">Exercícios colaborativos para aprimorar a deteção.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-gamificacao')"><h4 class="font-semibold text-lg text-gray-900">Gamificação em Treinamentos</h4><p class="text-sm text-gray-600 mt-2">Uso de jogos para aumentar o engajamento na conscientização.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-mapeamento-processos')"><h4 class="font-semibold text-lg text-gray-900">Mapeamento de Processos</h4><p class="text-sm text-gray-600 mt-2">Otimização de fluxos de trabalho de segurança (ex: BPMN).</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer" onclick="openModal('modal-rca')"><h4 class="font-semibold text-lg text-gray-900">Análise de Causa Raiz (RCA)</h4><p class="text-sm text-gray-600 mt-2">Investigação para prevenir a recorrência de incidentes.</p></div>
+                    </div>
+                </div>
+
+                <!-- Sobre Mim -->
+                <div id="sobre-mim" class="tab-content">
+                    <div class="bg-white p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl md:text-3xl font-medium text-gray-700 text-center mb-8">Sobre Mim</h3>
+                        <div class="max-w-3xl mx-auto text-justify text-gray-600 space-y-4">
+                            <p>Olá! Meu nome é <strong>Bianca Fernandes</strong>. Como uma profissional em transição de carreira para a Cibersegurança, criei este dashboard para materializar meus conhecimentos e minha paixão pela área.</p>
+                            <p>Minha jornada profissional começou nos tribunais, como advogada. Lá, aprendi que a melhor defesa se constrói sobre regras claras, análise crítica e uma profunda compreensão dos riscos. Hoje, trago essa mesma mentalidade para o universo digital, aplicando o rigor jurídico para construir defesas cibernéticas robustas e resilientes.</p>
+                            <p>A transição para a tecnologia, através da graduação em Ciência da Computação e da pós-graduação em Privacidade de Dados, foi um passo natural. Fui cativada pelo desafio constante da segurança da informação – um campo onde a estratégia, a antecipação e a ética são fundamentais. Acredito que a minha visão única, que une a conformidade legal à lógica técnica, é um diferencial poderoso para navegar os complexos desafios de GRC.</p>
+                            <p>Estou pronta para iniciar minha carreira em Segurança da Informação e busco uma oportunidade para aplicar meus conhecimentos em frameworks como ISO 27001 e NIST em desafios reais. Meu entusiasmo está em me aprofundar nas dinâmicas de segurança ofensiva e defensiva, utilizando meu raciocínio analítico do Direito e a lógica da computação para agregar valor à equipe desde o primeiro dia.</p>
+                            <div class="mt-8 flex justify-center space-x-6">
+                                <a href="https://github.com/BiancaVfernandes" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-indigo-600 transition-colors"><i class="fab fa-github fa-2x"></i></a>
+                                <a href="#" onclick="copyEmail(event)" class="text-gray-500 hover:text-indigo-600 transition-colors"><i class="fas fa-envelope fa-2x"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -183,87 +295,40 @@
     </div>
 
     <!-- Modals -->
-    <div id="modal-container">
-        <!-- Modals will be injected here by JS -->
+    <div id="modal-container"></div>
+    
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="hidden opacity-0 transform translate-y-2 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg">
+        <i class="fas fa-check-circle mr-2"></i>Email copiado para a área de transferência!
     </div>
+
 
     <script>
         const modalsData = {
-            'modal-politica-seguranca': {
-                title: 'Política de Segurança da Informação',
-                content: `
-                    <h4>1. Objetivo</h4>
-                    <p>Estabelecer as diretrizes para proteger os ativos de informação da Brandiamo Marchi contra ameaças, garantindo a continuidade do negócio e a conformidade legal.</p>
-                    <h4>2. Escopo</h4>
-                    <p>Esta política se aplica a todos os colaboradores, prestadores de serviço e parceiros que tenham acesso a informações da empresa.</p>
-                    <h4>3. Diretrizes Principais</h4>
-                    <ul>
-                        <li><strong>Controle de Acesso:</strong> O acesso a sistemas e dados deve ser baseado no princípio do menor privilégio (least privilege).</li>
-                        <li><strong>Classificação da Informação:</strong> As informações devem ser classificadas como Pública, Interna, Confidencial ou Restrita.</li>
-                        <li><strong>Gestão de Senhas:</strong> Senhas devem ser complexas, trocadas periodicamente e nunca compartilhadas. O uso de MFA é obrigatório.</li>
-                    </ul>`
-            },
-            'modal-matriz-riscos': {
-                title: 'Matriz de Riscos e Controles',
-                content: `
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-sm">
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th class="p-2 text-left font-semibold">Risco</th>
-                                    <th class="p-2 text-left font-semibold">Ameaça/Vulnerabilidade</th>
-                                    <th class="p-2 text-left font-semibold">Impacto</th>
-                                    <th class="p-2 text-left font-semibold">Controle (Blue Team)</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y">
-                                <tr>
-                                    <td class="p-2 font-medium">Vazamento de dados via Phishing</td>
-                                    <td class="p-2">Engenharia Social / Falta de conscientização</td>
-                                    <td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full">Alto</span></td>
-                                    <td class="p-2">Treinamento anti-phishing; Filtro de e-mail avançado; EDR.</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 font-medium">Indisponibilidade do site por DDoS</td>
-                                    <td class="p-2">Atacante externo / Falta de proteção na borda</td>
-                                    <td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-full">Médio</span></td>
-                                    <td class="p-2">Implementação de WAF e CDN com proteção Anti-DDoS.</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 font-medium">Acesso indevido ao CRM</td>
-                                    <td class="p-2">Senhas fracas / Ausência de MFA</td>
-                                    <td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full">Alto</span></td>
-                                    <td class="p-2">Política de senhas fortes; Habilitação obrigatória de MFA.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>`
-            },
-            'modal-frameworks': { title: 'Mapeamento de Frameworks', content: '<h4>NIST Cybersecurity Framework (CSF)</h4><p>Utilizamos as 5 funções (Identificar, Proteger, Detectar, Responder, Recuperar) para estruturar nossa estratégia de segurança.</p><h4>CIS Controls</h4><p>Aplicamos os CIS Controls como um guia prático e priorizado para a implementação de defesas técnicas essenciais.</p>' },
-            'modal-politica-privacidade': { title: 'Política de Privacidade', content: '<h4>Nosso Compromisso</h4><p>A Brandiamo Marchi está comprometida em proteger a privacidade e os dados pessoais de nossos clientes, em total conformidade com a LGPD.</p>' },
-            'modal-data-mapping': { title: 'Mapeamento de Dados (LGPD)', content: '<h4>Ciclo de Vida do Dado</h4><p>Mapeamos todo o ciclo de vida dos dados pessoais, desde a coleta até o descarte, garantindo que cada tratamento tenha uma base legal e uma finalidade legítima.</p>' },
-            'modal-dpia': { title: 'DPIA Simulado', content: '<h4>Análise de Impacto</h4><p>Realizamos Relatórios de Impacto à Proteção de Dados (DPIA) para novos projetos que envolvam tratamento de dados pessoais em larga escala ou de alto risco, a fim de mitigar proativamente as ameaças à privacidade.</p>' },
-            'modal-resposta-incidentes': { title: 'Plano de Resposta a Incidentes', content: '<h4>Fases da Resposta</h4><ol class="list-decimal list-inside"><li>Preparação</li><li>Identificação</li><li>Contenção</li><li>Erradicação</li><li>Recuperação</li><li>Lições Aprendidas</li></ol>' },
-            'modal-conscientizacao': { title: 'Plano de Conscientização', content: '<h4>Programa Contínuo</h4><p>Nosso programa inclui treinamentos anuais, campanhas de phishing simulado trimestrais e comunicações de segurança regulares para manter nossos colaboradores sempre alertas.</p>' },
-            'modal-owasp': { title: 'Análise de Vulnerabilidades Web (OWASP)', content: '<h4>Top 3 Riscos Monitorados</h4><ul><li><b>A01:2021 - Quebra de Controle de Acesso:</b> Garantimos que os usuários só possam acessar os dados que lhes são permitidos.</li><li><b>A02:2021 - Falhas Criptográficas:</b> Todos os dados sensíveis são transmitidos e armazenados de forma criptografada.</li><li><b>A03:2021 - Injeção:</b> Validamos e sanitizamos todas as entradas de usuário para prevenir ataques de injeção (ex: SQL Injection).</li></ul>' }
+            'modal-politica-seguranca': { title: 'Política de Segurança da Informação', content: `<h4>1. Objetivo</h4><p>Estabelecer as diretrizes para proteger os ativos de informação contra ameaças, garantindo a continuidade do negócio e a conformidade legal.</p><h4>2. Escopo</h4><p>Esta política aplica-se a todos os colaboradores, prestadores de serviço e parceiros.</p><h4>3. Diretrizes Principais</h4><ul><li><strong>Controlo de Acesso:</strong> Baseado no princípio do menor privilégio (least privilege).</li><li><strong>Classificação da Informação:</strong> As informações devem ser classificadas como Pública, Interna, Confidencial ou Restrita.</li><li><strong>Gestão de Palavras-passe:</strong> Palavras-passe devem ser complexas e o uso de MFA é obrigatório.</li></ul>` },
+            'modal-matriz-riscos': { title: 'Matriz de Riscos e Controlos', content: `<div class="overflow-x-auto"><table class="min-w-full text-sm"><thead class="bg-gray-100"><tr><th class="p-2 text-left font-semibold">Risco</th><th class="p-2 text-left font-semibold">Ameaça/Vulnerabilidade</th><th class="p-2 text-left font-semibold">Impacto</th><th class="p-2 text-left font-semibold">Controlo (Blue Team)</th></tr></thead><tbody class="divide-y"><tr><td class="p-2 font-medium">Vazamento de dados via Phishing</td><td class="p-2">Engenharia Social / Falta de conscientização</td><td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full">Alto</span></td><td class="p-2">Treinamento anti-phishing; Filtro de e-mail avançado; EDR.</td></tr><tr><td class="p-2 font-medium">Indisponibilidade do site por DDoS</td><td class="p-2">Atacante externo / Falta de proteção na borda</td><td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-full">Médio</span></td><td class="p-2">Implementação de WAF e CDN com proteção Anti-DDoS.</td></tr><tr><td class="p-2 font-medium">Acesso indevido ao CRM</td><td class="p-2">Palavras-passe fracas / Ausência de MFA</td><td class="p-2"><span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full">Alto</span></td><td class="p-2">Política de palavras-passe fortes; Habilitação obrigatória de MFA.</td></tr></tbody></table></div>` },
+            'modal-frameworks': { title: 'Mapeamento de Frameworks', content: '<h4>NIST Cybersecurity Framework (CSF)</h4><p>Utilizamos as 5 funções (Identificar, Proteger, Detetar, Responder, Recuperar) para estruturar a nossa estratégia de segurança.</p><h4>CIS Controls</h4><p>Aplicamos os CIS Controls como um guia prático e priorizado para a implementação de defesas técnicas essenciais.</p>' },
+            'modal-risco-terceiros': { title: 'Gestão de Riscos de Terceiros', content: '<h4>Processo de Due Diligence</h4><p>A segurança da nossa cadeia de suprimentos é crucial. Nosso processo inclui um questionário de due diligence de segurança, análise de certificações (como ISO 27001), e a inclusão de cláusulas de segurança e privacidade de dados em todos os contratos para garantir que nossos parceiros sigam os mesmos padrões de proteção que nós.</p>' },
+            'modal-kris': { title: 'Indicadores-Chave de Risco (KRIs)', content: '<h4>Medindo o Risco</h4><p>Monitoramos continuamente os seguintes KRIs para prever e gerir a nossa exposição a riscos:</p><ul><li><strong>% de sistemas críticos</strong> com vulnerabilidades altas/críticas não corrigidas.</li><li><strong>Tempo Médio para Correção (MTTR)</strong> de vulnerabilidades.</li><li><strong>Nº de contas privilegiadas</strong> inativas por mais de 90 dias.</li></ul>' },
+            'modal-auditoria': { title: 'Auditoria e Conformidade', content: '<h4>Verificação e Validação</h4><p>Realizamos auditorias internas e externas para verificar a eficácia dos nossos controlos de segurança. Este processo garante a conformidade contínua com regulamentações como a LGPD e padrões de mercado como a ISO 27001 e PCI-DSS, fornecendo uma garantia independente à gestão.</p>' },
+            'modal-politica-privacidade': { title: 'Política de Privacidade', content: '<h4>O Nosso Compromisso</h4><p>Este projeto simula o compromisso com a proteção da privacidade e os dados pessoais, em total conformidade com a LGPD.</p>' },
+            'modal-data-mapping': { title: 'Mapeamento de Dados (LGPD)', content: '<h4>Ciclo de Vida do Dado</h4><p>Mapeamos todo o ciclo de vida dos dados pessoais, desde a recolha até ao descarte, garantindo que cada tratamento tenha uma base legal e uma finalidade legítima.</p>' },
+            'modal-dpia': { title: 'DPIA Simulado', content: '<h4>Análise de Impacto</h4><p>Realizamos Relatórios de Impacto à Proteção de Dados (DPIA) para novos projetos que envolvam tratamento de dados pessoais de alto risco, a fim de mitigar proativamente as ameaças à privacidade.</p>' },
+            'modal-incidente-privacidade': { title: 'Gestão de Incidentes de Privacidade', content: '<h4>Fluxo de Resposta (LGPD)</h4><p>Em caso de um incidente envolvendo dados pessoais, nosso fluxo de resposta inclui:</p><ol><li><strong>Avaliação do Incidente:</strong> Análise da natureza, categoria e quantidade de titulares afetados.</li><li><strong>Comunicação:</strong> Notificação à ANPD e aos titulares envolvidos dentro do prazo legal.</li><li><strong>Plano de Remediação:</strong> Ações para mitigar os danos e prevenir a recorrência.</li></ol>' },
+            'modal-resposta-incidentes': { title: 'Plano de Resposta a Incidentes', content: '<h4>Fases da Resposta</h4><ol><li>Preparação</li><li>Identificação</li><li>Contenção</li><li>Erradicação</li><li>Recuperação</li><li>Lições Aprendidas</li></ol>' },
+            'modal-conscientizacao': { title: 'Plano de Conscientização', content: '<h4>Programa Contínuo</h4><p>O nosso programa inclui treinamentos anuais, campanhas de phishing simulado trimestrais e comunicações de segurança regulares para manter os nossos colaboradores sempre alertas.</p>' },
+            'modal-owasp': { title: 'Análise de Vulnerabilidades Web (OWASP)', content: '<h4>Top 3 Riscos Monitorizados</h4><ul><li><b>A01:2021 - Quebra de Controlo de Acesso:</b> Garantimos que os utilizadores só possam aceder aos dados que lhes são permitidos.</li><li><b>A02:2021 - Falhas Criptográficas:</b> Todos os dados sensíveis são transmitidos e armazenados de forma criptografada.</li><li><b>A03:2021 - Injeção:</b> Validamos e sanitizamos todas as entradas de utilizador para prevenir ataques de injeção (ex: SQL Injection).</li></ul>' },
+            'modal-gestao-vulnerabilidades': { title: 'Gestão de Vulnerabilidades', content: '<h4>Ciclo de Vida da Vulnerabilidade</h4><p>Nosso ciclo de gestão de vulnerabilidades segue 4 etapas:</p><ol><li><strong>Identificação:</strong> Scans automatizados e testes manuais contínuos.</li><li><strong>Priorização:</strong> Classificação baseada no CVSS (Common Vulnerability Scoring System) e na criticidade do ativo.</li><li><strong>Correção:</strong> Aplicação de patches e atualizações.</li><li><strong>Validação:</strong> Novo scan para confirmar a correção.</li></ol>' },
+            'modal-threat-intelligence': { title: 'Inteligência de Ameaças (Threat Intelligence)', content: '<h4>Defesa Proativa</h4><p>Monitoramos ativamente fontes de inteligência de ameaças (OSINT, feeds de parceiros) para nos anteciparmos a novas táticas, técnicas e procedimentos (TTPs) de atacantes, ajustando nossas defesas de forma proativa antes que um ataque ocorra.</p>' },
+            'modal-cloud-security': { title: 'Segurança em Nuvem (Cloud Security)', content: '<h4>Modelo de Responsabilidade Compartilhada</h4><p>Operamos com base no Modelo de Responsabilidade Compartilhada dos provedores (AWS, Azure, GCP), onde o provedor é responsável pela segurança "da" nuvem, e nós somos responsáveis pela segurança "na" nuvem. Isso inclui:</p><ul><li><strong>Gestão de Identidade e Acesso (IAM):</strong> Configuração de permissões granulares.</li><li><strong>Configuração de Redes:</strong> Uso de Security Groups e Network Security Groups (NSGs).</li><li><strong>Gestão de Postura (CSPM):</strong> Ferramentas para detetar configurações incorretas.</li></ul>' },
+            'modal-purple-team': { title: 'Simulação Purple Team', content: '<h4>O que é?</h4><p>É um exercício onde a equipa de ataque (Red Team) e a equipa de defesa (Blue Team) trabalham juntas. O Red Team executa um ataque e partilha imediatamente as suas técnicas com o Blue Team, que ajusta as ferramentas de deteção e os controlos em tempo real. O objetivo não é "ganhar", mas sim melhorar a segurança de forma colaborativa e eficiente.</p><h4>Exemplo de Ciclo</h4><ol><li>Red Team tenta uma nova técnica de movimento lateral.</li><li>O SIEM do Blue Team não gera um alerta.</li><li>Juntos, eles criam uma nova regra de correlação no SIEM.</li><li>O Red Team repete o ataque e o alerta é gerado com sucesso.</li></ol>' },
+            'modal-gamificacao': { title: 'Gamificação em Treinamentos de Segurança', content: '<h4>Porquê Gamificar?</h4><p>Treinamentos tradicionais podem ser monótonos. A gamificação usa elementos de jogos (pontos, emblemas, rankings) para aumentar o engajamento, a retenção de conhecimento e promover uma competição saudável.</p><h4>Exemplo de Programa</h4><ul><li><b>Plataforma de Phishing:</b> Colaboradores que identificam corretamente e-mails de phishing ganham pontos.</li><li><b>Ranking Mensal:</b> Um ranking mostra os "Campeões de Segurança" do mês.</li><li><b>Emblemas (Badges):</b> Conquistar emblemas por completar módulos de treinamento, como "Guardião de Palavras-passe" ou "Mestre do MFA".</li></ul>' },
+            'modal-mapeamento-processos': { title: 'Mapeamento de Processos de Segurança', content: '<h4>O que é?</h4><p>É o ato de desenhar visualmente um fluxo de trabalho de segurança, como o processo de resposta a um incidente. Usar uma notação padrão como BPMN (Business Process Model and Notation) ajuda a identificar gargalos, definir responsabilidades (matriz RACI) e otimizar o processo.</p><h4>Exemplo Simplificado: Fluxo de Triagem de Alerta</h4><p>1. <b>Início:</b> Alerta recebido no SIEM.<br>2. <b>Análise Inicial:</b> O analista Nível 1 verifica se é um falso positivo.<br>3. <b>Decisão:</b> É um falso positivo? Se sim, fecha o alerta. Se não, continua.<br>4. <b>Escalonamento:</b> O alerta é escalado para o analista Nível 2.<br>5. <b>Fim:</b> O processo de resposta a incidentes é iniciado.</p>' },
+            'modal-rca': { title: 'Análise de Causa Raiz (RCA)', content: '<h4>Aprendendo com Incidentes</h4><p>Após a resolução de todo incidente crítico, conduzimos uma Análise de Causa Raiz, utilizando métodos como os "5 Porquês", para identificar a falha fundamental no processo ou tecnologia. O objetivo é implementar melhorias que previnam a recorrência do mesmo tipo de incidente, transformando cada falha em uma oportunidade de fortalecimento.</p>' }
         };
 
         function createModal(id, title, content) {
-            return `
-                <div id="${id}" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 opacity-0 pointer-events-none">
-                    <div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col transform scale-95">
-                        <div class="border-b px-6 py-4 flex justify-between items-center flex-shrink-0">
-                            <h3 class="text-lg font-semibold">${title}</h3>
-                            <button onclick="closeModal('${id}')" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
-                        </div>
-                        <div class="p-6 text-sm prose max-w-none overflow-y-auto">
-                            ${content}
-                        </div>
-                        <div class="border-t px-6 py-3 bg-gray-50 rounded-b-lg flex-shrink-0 text-right">
-                             <button onclick="closeModal('${id}')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm font-medium">Fechar</button>
-                        </div>
-                    </div>
-                </div>`;
+            return `<div id="${id}" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 opacity-0 pointer-events-none"><div class="modal-content bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col transform scale-95"><div class="border-b px-6 py-4 flex justify-between items-center flex-shrink-0"><h3 class="text-lg font-semibold">${title}</h3><button onclick="closeModal('${id}')" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button></div><div class="p-6 text-sm prose max-w-none overflow-y-auto">${content}</div><div class="border-t px-6 py-3 bg-gray-50 rounded-b-lg flex-shrink-0 text-right"><button onclick="closeModal('${id}')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm font-medium">Fechar</button></div></div></div>`;
         }
         
         const modalContainer = document.getElementById('modal-container');
@@ -274,44 +339,95 @@
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
-            const modalContent = modal.querySelector('.modal-content');
             document.body.style.overflow = 'hidden';
             modal.classList.remove('pointer-events-none', 'opacity-0');
-            modalContent.classList.remove('scale-95');
+            modal.querySelector('.modal-content').classList.remove('scale-95');
         }
 
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             if (!modal) return;
-            const modalContent = modal.querySelector('.modal-content');
             document.body.style.overflow = 'auto';
             modal.classList.add('opacity-0');
-            modalContent.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('pointer-events-none');
-            }, 300);
+            modal.querySelector('.modal-content').classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('pointer-events-none'); }, 300);
         }
 
         function switchTab(event, tabId) {
             event.preventDefault();
-            
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
-
-            // Close mobile menu on tab switch
-            if (window.innerWidth < 768) {
-                toggleMenu();
-            }
+            if (window.innerWidth < 768) { toggleMenu(); }
         }
 
         function toggleMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-overlay');
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('mobile-overlay').classList.toggle('hidden');
+        }
+        
+        // Risk Map Dynamic Panel Logic
+        const riskDots = document.querySelectorAll('.risk-dot');
+        const riskDetailsPanel = document.getElementById('risk-details-panel');
+
+        riskDots.forEach(dot => {
+            dot.addEventListener('click', function() {
+                // Remove selected class from all dots
+                riskDots.forEach(d => d.classList.remove('selected'));
+                // Add selected class to the clicked dot
+                this.classList.add('selected');
+
+                const riskTitle = this.dataset.risk;
+                const riskDetails = this.dataset.details;
+                const riskImpact = this.dataset.impact;
+                const riskProb = this.dataset.probability;
+
+                const getTagColor = (level) => {
+                    if (level === 'Alto' || level === 'Alta') return 'bg-red-100 text-red-800';
+                    if (level === 'Médio' || level === 'Média') return 'bg-yellow-100 text-yellow-800';
+                    return 'bg-green-100 text-green-800';
+                };
+
+                riskDetailsPanel.innerHTML = `
+                    <h5 class="font-bold text-gray-800 mb-2">${riskTitle}</h5>
+                    <div class="flex space-x-2 mb-3">
+                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full ${getTagColor(riskImpact)}">Impacto: ${riskImpact}</span>
+                        <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full ${getTagColor(riskProb)}">Probabilidade: ${riskProb}</span>
+                    </div>
+                    <p class="text-sm text-gray-600">${riskDetails}</p>
+                `;
+            });
+        });
+
+        // Copy Email to Clipboard Logic
+        function copyEmail(event) {
+            event.preventDefault();
+            const email = 'adv.biancavfernandes@gmail.com';
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = email;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            showToast();
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast-notification');
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+            }, 10); // Start transition
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 500); // Wait for fade out transition
+            }, 3000); // Toast visible duration
         }
     </script>
 </body>
